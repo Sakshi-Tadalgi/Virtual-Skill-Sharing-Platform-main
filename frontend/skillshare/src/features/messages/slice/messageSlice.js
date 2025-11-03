@@ -3,7 +3,7 @@ import { fetchMessages } from "../actions/messageActions";
 
 const initialState = {
   messages: [],
-  status: "idle",
+  loading: false,
   error: null,
 };
 
@@ -20,9 +20,19 @@ const messageSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchMessages.fulfilled, (state, action) => {
-      state.messages = action.payload;
-    });
+    builder
+      .addCase(fetchMessages.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchMessages.fulfilled, (state, action) => {
+        state.loading = false;
+        state.messages = action.payload;
+      })
+      .addCase(fetchMessages.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
+      });
   },
 });
 

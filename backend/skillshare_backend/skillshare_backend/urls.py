@@ -11,7 +11,7 @@ urlpatterns = [
     # Other feature apps
     path('api/skills/', include('skills.urls')),
     path('api/workshops/', include('workshops.urls')),
-    path('api/message/', include('messaging.urls')),
+    path('api/', include('messaging.urls')),
     path('api/feedback/', include('feedback.urls')),
     path('api/community/', include('community.urls')),
     path('api/notifications/', include('notifications.urls')),

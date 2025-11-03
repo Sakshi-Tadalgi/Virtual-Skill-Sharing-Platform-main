@@ -54,18 +54,35 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL: "http://127.0.0.1:8000/api/",
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
+// ✅ Attach token before every request
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// ✅ Optional: handle 401 errors globally (auto logout or refresh)
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      console.warn("Unauthorized! Token may be expired or invalid.");
+      localStorage.removeItem("token");
+      window.location.href = "/login"; // redirect to login
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default API;

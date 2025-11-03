@@ -8,18 +8,27 @@ import { Box, Typography } from "@mui/material";
 export default function ChatRoom({ roomName }) {
   const dispatch = useDispatch();
 
-  const socket = useWebSocket(roomName, (msg) => {
-    dispatch(addMessage(JSON.parse(msg)));
+  // Use parsed data directly from useWebSocket
+  const { send } = useWebSocket(roomName, (data) => {
+    // Ensure data has message content before dispatch
+    if (data && data.message) {
+      dispatch(addMessage(data));
+    }
   });
 
   const handleSend = (content) => {
-    const message = { content, timestamp: new Date().toISOString() };
-    socket.send(JSON.stringify(message));
+    const message = {
+      message: content,
+      timestamp: new Date().toISOString(),
+    };
+    send(message);
   };
 
   return (
     <Box sx={{ maxWidth: 600, mx: "auto", mt: 4 }}>
-      <Typography variant="h5">Chat Room: {roomName}</Typography>
+      <Typography variant="h5" gutterBottom>
+        Chat Room: {roomName}
+      </Typography>
       <MessageList />
       <MessageInput onSend={handleSend} />
     </Box>
